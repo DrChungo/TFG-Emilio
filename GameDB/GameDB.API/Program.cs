@@ -2,39 +2,32 @@
 using GameDB.API.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
-// ── Configuración tipada ─────────────────────────────────────────
+//  Configuración tipada 
 builder.Services.Configure<IgdbSettings>(
     builder.Configuration.GetSection(IgdbSettings.SectionName));
 
 builder.Services.Configure<CacheSettings>(
     builder.Configuration.GetSection(CacheSettings.SectionName));
 
-// ── Base de datos MySQL con EF Core ─────────────────────────────
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
+//  Base de datos SQLite con EF Core
 builder.Services.AddDbContext<GameDbContext>(options =>
-    options.UseMySql(
-        connectionString,
-        ServerVersion.AutoDetect(connectionString),
-        mySqlOptions => mySqlOptions.EnableRetryOnFailure(
-            maxRetryCount: 3,
-            maxRetryDelay: TimeSpan.FromSeconds(5),
-            errorNumbersToAdd: null
-        )
+    options.UseSqlite(
+        builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
 
-// ── HttpClient para llamadas a IGDB ─────────────────────────────
+// HttpClient para llamadas a IGDB
 builder.Services.AddHttpClient("IgdbClient");
 
-// ── CORS para el frontend React ──────────────────────────────────
+// CORS para el frontend React
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // Puerto por defecto de Vite
+        policy.WithOrigins("http://localhost:5173")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -46,7 +39,7 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// ── Middleware pipeline ──────────────────────────────────────────
+//Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
