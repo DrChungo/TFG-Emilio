@@ -1,0 +1,9 @@
+# Visual Studio
+.vs/
+
+# .NET
+bin/
+obj/
+
+# Node
+node_modules/
