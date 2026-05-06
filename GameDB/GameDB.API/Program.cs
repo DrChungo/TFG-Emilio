@@ -1,5 +1,9 @@
 ﻿using GameDB.API.Config;
 using GameDB.API.Infrastructure;
+using GameDB.API.Repositories;
+using GameDB.API.Repositories.Interfaces;
+using GameDB.API.Services;
+using GameDB.API.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -32,6 +36,15 @@ builder.Services.AddCors(options =>
               .AllowAnyMethod();
     });
 });
+// Repositorios
+builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddScoped<IGenreRepository, GenreRepository>();
+builder.Services.AddScoped<IPlatformRepository, PlatformRepository>();
+
+// Servicios 
+builder.Services.AddScoped<IIgdbService, IgdbService>();
+builder.Services.AddScoped<IGameService, GameService>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
